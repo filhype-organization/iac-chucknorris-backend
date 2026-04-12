@@ -1,0 +1,89 @@
+# argo-app.yaml — Application Argo CD pour le backend chuck-norris.
+#
+# Prérequis dans le cluster Argo CD :
+#   1. Le plugin CMP "timoni" doit être installé dans argocd-repo-server.
+#      Voir : https://timoni.sh/docs/gitops/argocd/
+#      ConfigMap argocd-cmp-cm à créer (exemple ci-dessous en commentaire).
+#
+#   2. SOPS doit être configuré dans le CMP si prod-values.cue est chiffré,
+#      ou le secret OIDC doit être fourni via un ExternalSecret.
+#
+#   3. Le namespace "chuck-norris" doit être créé (géré par syncOptions CreateNamespace).
+#
+# ── Exemple de ConfigMap argocd-cmp-cm ────────────────────────────────────────
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: argocd-cmp-cm
+#   namespace: argocd
+# data:
+#   timoni.yaml: |
+#     apiVersion: argoproj.io/v1alpha1
+#     kind: ConfigManagementPlugin
+#     metadata:
+#       name: timoni
+#     spec:
+#       version: v1.0
+#       init:
+#         command: [sh, -c, "timoni mod vendor"]
+#       generate:
+#         command:
+#           - sh
+#           - -c
+#           - |
+#             timoni build $ARGOCD_APP_NAME . \
+#               -n $ARGOCD_APP_NAMESPACE \
+#               -f prod-values.cue
+# ──────────────────────────────────────────────────────────────────────────────
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chuck-norris-backend
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: chuck-norris-backend
+    app.kubernetes.io/managed-by: argocd
+  # Suppression en cascade : retire tous les objets K8s quand l'Application est supprimée.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    # TODO: Remplacer par l'URL de votre repo git.
+    repoURL: https://github.com/OWNER/super-chuck-norris.git
+    targetRevision: HEAD
+    path: infra/k8s/backend
+
+    # Le plugin CMP "timoni" exécute "timoni build" pour générer les manifests K8s.
+    plugin:
+      name: timoni
+      parameters:
+        # Fichier de valeurs de production (doit être chiffré avec SOPS en production).
+        - name: values-file
+          string: prod-values.cue
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chuck-norris
+
+  syncPolicy:
+    automated:
+      # Supprime les ressources K8s absentes du module Timoni.
+      prune: true
+      # Réconcilie automatiquement si l'état du cluster dévie.
+      selfHeal: true
+    syncOptions:
+      # Crée le namespace s'il n'existe pas.
+      - CreateNamespace=true
+      # Évite les conflits sur les champs gérés par d'autres controllers.
+      - ServerSideApply=true
+
+  # Retry en cas d'échec de sync (ex: DB pas encore prête au 1er démarrage).
+  syncPolicy:
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m
