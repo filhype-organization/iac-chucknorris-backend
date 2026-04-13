@@ -9,7 +9,7 @@ jobs:
   build:
     uses: filhype-organization/universal-devops-action/.github/workflows/github-actions.yml@timoni
     with:
-      docker_image_name: 'leeson77/chuck-norris-backend'
+      docker_image_name: 'leeson77/chuck-norris-backend-timoni'
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_USERNAME: ${{ secrets.LOGIN_DOCKER_HUB }}
