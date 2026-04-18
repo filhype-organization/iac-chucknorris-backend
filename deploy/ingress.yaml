@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chuck-norris-backend-ingress
+  namespace: chuck-norris
+  labels:
+    app.kubernetes.io/name: chuck-norris-backend
+    app.kubernetes.io/managed-by: timoni
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - chuck.filhype.ovh
+      secretName: filhype-ingress-tls
+  rules:
+    - host: chuck.filhype.ovh
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: chuck-norris-backend-svc
+                port:
+                  number: 80
