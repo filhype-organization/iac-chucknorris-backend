@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: chuck-norris-backend
+  name: infra-metallb-config
   namespace: flux-system
 spec:
-  interval: 5m
-  path: ./deploy
+  interval: 10m
+  path: ./infra/metallb-config
   prune: true
   wait: true
   timeout: 3m
@@ -13,9 +13,4 @@ spec:
     kind: GitRepository
     name: iac-chucknorris-backend
   dependsOn:
-    - name: infra-traefik
-  healthChecks:
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: chuck-norris-backend
-      namespace: chuck-norris
+    - name: infra-metallb

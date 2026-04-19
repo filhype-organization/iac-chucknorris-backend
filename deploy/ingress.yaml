@@ -8,13 +8,10 @@ metadata:
     app.kubernetes.io/managed-by: timoni
   annotations:
     cert-manager.io/cluster-issuer: lets-encrypt
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/enable-access-log: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: chuck-norris-strip-api-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts:
         - chuck.filhype.ovh
