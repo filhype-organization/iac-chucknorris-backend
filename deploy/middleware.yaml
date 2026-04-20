@@ -4,6 +4,6 @@ metadata:
   name: strip-api-prefix
   namespace: chuck-norris
 spec:
-  replacePathRegex:
-    regex: ^/api(/|$)(.*)
-    replacement: /${2}
+  stripPrefix:
+    prefixes:
+      - /api

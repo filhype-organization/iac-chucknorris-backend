@@ -15,8 +15,8 @@ spec:
     - host: chuck.filhype.ovh
       http:
         paths:
-          - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api
+            pathType: Prefix
             backend:
               service:
                 name: chuck-norris-backend-svc
