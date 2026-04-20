@@ -22,6 +22,7 @@ spec:
     ingressClass:
       enabled: true
       isDefaultClass: true
+      name: traefik
     service:
       type: LoadBalancer
     logs:
