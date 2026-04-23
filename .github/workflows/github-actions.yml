@@ -6,8 +6,7 @@ on:
       - 'templates/**'
       - 'timoni.cue'
       - 'values.cue'
-      - 'prod-values.cue'
-      - '.github/cue.mod/**'
+      - 'cue.mod/**'
     branches:
       - main
   pull_request:
@@ -22,62 +21,3 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_USERNAME: ${{ secrets.LOGIN_DOCKER_HUB }}
       DOCKER_TOKEN: ${{ secrets.TOKEN_DOCKER_HUB }}
-
-  render-manifests:
-    needs: publish-module
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install timoni
-        run: |
-          TIMONI_VERSION=$(curl -s https://api.github.com/repos/stefanprodan/timoni/releases/latest | jq -r .tag_name)
-          curl -sL "https://github.com/stefanprodan/timoni/releases/download/${TIMONI_VERSION}/timoni_Linux_arm64.tar.gz" \
-            | tar xz timoni
-          mv timoni /usr/local/bin/timoni
-          timoni version
-
-      - name: Vendor module dependencies
-        run: timoni mod vendor
-
-      - name: Render manifests to deploy/
-        run: |
-          # Preserve the current image tag from deployment.yaml before re-rendering.
-          CURRENT_TAG=$(grep -oP 'leeson77/chuck-norris-backend:\K[^\s#]+' deploy/deployment.yaml 2>/dev/null || echo "latest")
-
-          # Render each resource kind to its own file.
-          timoni build chuck-norris-backend . -n chuck-norris -f prod-values.cue \
-            | python3 - <<'PYEOF'
-          import sys, yaml, pathlib
-
-          docs = list(yaml.safe_load_all(sys.stdin))
-          kind_to_file = {
-              "ConfigMap":  "deploy/configmap.yaml",
-              "Deployment": "deploy/deployment.yaml",
-              "Service":    "deploy/service.yaml",
-              "Ingress":    "deploy/ingress.yaml",
-          }
-          for doc in docs:
-              if doc is None:
-                  continue
-              path = kind_to_file.get(doc.get("kind"))
-              if path:
-                  pathlib.Path(path).write_text(yaml.dump(doc, default_flow_style=False, allow_unicode=True))
-          PYEOF
-
-          # Restore the image tag that was set by the backend CI.
-          if [ "$CURRENT_TAG" != "latest" ]; then
-            sed -i "s|leeson77/chuck-norris-backend:.*|leeson77/chuck-norris-backend:${CURRENT_TAG} # {\"\\$imagepolicy\": \"flux-system:chuck-norris-backend\"}|" \
-              deploy/deployment.yaml
-          fi
-
-      - name: Commit rendered manifests
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add deploy/configmap.yaml deploy/deployment.yaml deploy/service.yaml deploy/ingress.yaml
-          git diff --staged --quiet || \
-            git commit -m "chore: re-render manifests from timoni module [skip ci]"
-          git push
