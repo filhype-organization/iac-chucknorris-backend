@@ -20,7 +20,7 @@ spec:
       containers:
         - name: chuck-norris-backend
           # CI updates this line automatically — do not edit manually.
-          image: leeson77/chuck-norris-backend:95d0cad # {"$imagepolicy": "flux-system:chuck-norris-backend"}
+          image: leeson77/chuck-norris-backend:b385913 # {"$imagepolicy": "flux-system:chuck-norris-backend"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
