@@ -1,0 +1,33 @@
+// bundle.cue — Timoni Bundle pour le déploiement GitOps du backend.
+//
+// Ce fichier est la source de vérité pour le déploiement en production.
+// Le job CI update-iac met à jour le tag image automatiquement à chaque push sur main.
+// Le CronJob timoni-runner (namespace timoni-system) applique ce bundle toutes les 2 minutes.
+bundle: {
+	apiVersion: "v1alpha1"
+	name:       "chuck-norris-backend"
+	instances: {
+		"chuck-norris-backend": {
+			module: {
+				url:     "oci://registry-1.docker.io/leeson77/chuck-norris-backend-timoni"
+				version: "latest"
+			}
+			namespace: "chuck-norris"
+			values: {
+				image: {
+					// CI updates this line automatically — do not edit manually.
+					tag: "latest"
+				}
+				sealedSecrets: {
+					auth0: {
+						encryptedClientSecret: "AgDE6TmLNpHuOV6RMIPYoZV/1VA4mXolwS19FGDyCpvuhGOGcA/w6CJkGZStgX0F1Qvb+4GrS93iETu0I1asOeB3bgNw7EO3ZsLLGhK4QbHqUt4NojgBW02ZmCQ08/aFtf5TFDKA25OWhgZuV3bid9akn68GmUDd3JM1sz8kFLfCvPJfb3CUdcLqp8Qv28QaNb7S82vhGiNh0NE0BaD3zKA4gKDEOQgQ5cGE3YuZn4/SdpfCw2ayL9Jks8nvI2jv2jdagJeDRYsjaH/sXeGo4FkP9xmcdKeNn2r9hcCEPz2fLxmfjYZQAvys/AM30ZyGcFcGVsaosJ9htyUa1dq+Kk4mQaCg/WWGqQ6gOh0ttfDtDqYbQHJ8bNXkVhuUX+ekzPr1tAbBhChPMV6TOf9Z0OPAuCAiOkijFRTQ8jLUY/8AcNglnHMOSBrYID6R7CHBG26732VpvaT9x/WUCwIcvbhsiYjE/v8hnpMeTgTvPckwvdXxjSw1KtcrLGeh16R1gI6IxI8VQKtrYr63JtDamafzEhBV9V2NIY7pPAQYFaqMcMQHexwDLiJwCRx8KHoMoW09U0ZtXDRwTSLF0gEXhpaUdMx+Aio5Cn9HAczDxhYtNZ4m/TkKTdTxxYf7K0IiXqePgz6Gf4se1cL1xy2PgTJOs5ocawyOZNWULgUx9CAHrUwSpGTFQOnY2vG7KuOuj17PchwUUDTTl54mrUX2IOSD1mvigpnBfhXok4TU9ne4onGmDUgf4zwzujG4OZqwSHamdc3CGILdWjOjB3mw6wv"
+					}
+					database: {
+						encryptedUsername: "AgBHM0zr5EHN1ksv9mepHiXIrMXG/bVd5qJZP6XkvIH5hpuXn78qdSQaM7QfcVciwBbBylhk/AcZri4CrbtJrIGbLQhpYsPAIH1bWSWMKq+CJ9pv0Or4X2qVpX9iWQ8m3Fep6tRlmLoEY0lPmR90jbNNd7C7uf6/HqJboBaJi8ZcuuF8a8HX19glk1RDOha+h/n4iPLkQBZd5mnv/wm3/bvtXoBHlpzxSzwmPkLtvUBwz3TrYzxI8Z5bI4JawamrtxTsG4uXnIfWbY5ioxitxXQ1rO6oSeZ0w0DLim4Gp6LPcJsM4vHvFMDHQJaq6WHd8U9jGl6vBnMOUlsbkCJtqB49tBxUJZlYE+vRxk+vDhZ17EErJfCMFsw5pKLZaE57GwlVyD2SsJ8qO3uEGZyzl/xZrDPqMBBMYeZAnWH/ZbQypRrFxIn6e1TrKuhAZ1uqSC89NBQ/duz93htSwM3HRkxldFIb0iDzd7PWAii58IzMhIwMasc5yzd/6GMQlurkwPdPap7qJFtePuIHRbAnjLTGe2FhMbeiKPZ4kUVIwm0acNr20dM4Wii2i9mj7KBwFlHQEESOWazjPLyh6FfVXuNZ+vfiEgWkDHCVZw/9Pu9Z3CyCVYtiWeBONadOZA0VDOTVyT63xB9AuQ3a+iIxSLRE4hxHXabEMv/Pl3bDcCDcNmiduwrkV8vlSxoZWev3aVxn/y0="
+						encryptedPassword: "AgA4uYZ34azrdo0g/yU+qbfOFxdF3fjgkfZ8uYRPFB82prxRrIL5MOp+m9As9zaBLiKqlfrfr3uEmsUNc7AnaWaTe1V7oFvK/wtC9ouc8OlmLwxrW/00ZaxrXpO7Yg95sW9KsWni9fFQTAHLLkIl2Roz5G1ivf29I/X2pbxVy8Z0+rsSyLJpEa5BWalNVXUaTws02ErlNSylS3SL2h7sYPPKNeZYJBQ+iatUGMYcrC/dhccZKY6VlJmirk2hJJyXJfInC9ofVkj7x+HqP+TXjgJbJ0J984WY2vrDjc0qeFW7NZlEpuDaqc7M4VQybUglLpKrZRAJjhzs8S5RdechSw6s14OsjWCkwiBYxScFFry7as58dDFedAP/9EY8QJihHQr1DUkdcBOzr/1sWSpsjpUi3BYCrIE4CvO1tgtw51QA9Rgp7Qx7MMl5jVThAu3ff+G+N0U5Y1QChbBJh9MwUwE4mqwn1QSBbcDkshRnen2G5X0etHy/Hb6gPUBJspiMC6H3kqsCdrxjR0mnXnf0sBbUxyM1WOyDfwQcJ+zP+VlayI4huRZzLWYqvB9UQTlJb926MdzXegSVneKmIi0FAH5dgaXRGav5LtuVgCyGZia40DhFIsTjlCSBF87umu17Eg8yPY+1dH79sgfO8izcrwEN4DDF4AznFC9V+cYp0OSQx4JpyW0bwy4nm7SgbTLVc+LavhHVABzPD9tk+xu9/hiF/aKsiLCMZrUN/fztdo4NOKP+4TEtrLEMCKvqhn7NkuSr5ppLsjXp8H5CLBzxRU8w"
+					}
+				}
+			}
+		}
+	}
+}

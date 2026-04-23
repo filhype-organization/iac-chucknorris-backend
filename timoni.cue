@@ -14,14 +14,17 @@ timoni: v1alpha1.#Config & {}
 // Valeurs par défaut — surcharger avec -f prod-values.cue au déploiement.
 values: #Values & {}
 
-// Objets Kubernetes générés par ce module.
-// Le Secret auth0-oidc-secret est géré hors du module via un SealedSecret
-// (auth0-sealed-secret.yaml) — le Deployment le référence mais Timoni ne le crée pas.
+// Objets Kubernetes générés par ce module, appliqués dans l'ordre.
+// L'ordre garantit que le Namespace et les Secrets existent avant le Deployment.
 instance: v1alpha1.#Instance & {
 	objects: [
+		#Namespace,
+		#Auth0SealedSecret,
+		#DatabaseSealedSecret,
 		#Configmap,
-		#Deployment,
 		#Service,
+		#Middleware,
+		#Deployment,
 		if values.ingress.enabled {#Ingress},
 	]
 }

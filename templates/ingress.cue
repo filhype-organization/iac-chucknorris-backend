@@ -1,14 +1,8 @@
 package main
 
 // #Ingress expose le backend via Traefik sur chuck.filhype.ovh/api.
-//
 // TLS terminé par Cloudflare — le trafic Cloudflare → cluster est HTTP.
-//
-// Réécriture de chemin :
-//   Le Quarkus app sert ses endpoints à la racine ("/").
-//   Un Middleware Traefik (strip-api-prefix) réécrit avant de transmettre au pod :
-//     /api        → /
-//     /api/jokes  → /jokes
+// Le Middleware strip-api-prefix réécrit /api → / avant de transmettre au pod.
 #Ingress: {
 	apiVersion: "networking.k8s.io/v1"
 	kind:       "Ingress"
@@ -17,10 +11,7 @@ package main
 		namespace: values.metadata.namespace
 		labels:    _commonLabels
 		annotations: {
-			// Réécriture du préfixe /api → / via Middleware Traefik
 			"traefik.ingress.kubernetes.io/router.middlewares": "\(values.metadata.namespace)-strip-api-prefix@kubernetescrd"
-
-			// Entrypoint HTTP (TLS géré par Cloudflare)
 			"traefik.ingress.kubernetes.io/router.entrypoints": "web"
 		} & values.metadata.annotations
 	}
@@ -29,8 +20,8 @@ package main
 		rules: [{
 			host: values.ingress.host
 			http: paths: [{
-				path:     "\(values.ingress.path)(/|$)(.*)"
-				pathType: "ImplementationSpecific"
+				path:     values.ingress.path
+				pathType: "Prefix"
 				backend: service: {
 					name: "\(values.metadata.name)-svc"
 					port: number: values.service.port

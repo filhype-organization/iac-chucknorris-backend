@@ -108,6 +108,11 @@ package main
 						runAsUser:                1001
 						capabilities: drop: ["ALL"]
 					}
+
+					volumeMounts: [{
+						name:      "tmp"
+						mountPath: "/tmp"
+					}]
 				}]
 
 				// Volume tmpfs pour les fichiers temporaires du runtime Quarkus natif.
