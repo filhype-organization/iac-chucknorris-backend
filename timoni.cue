@@ -1,40 +1,19 @@
 package main
 
-import timoniv1 "timoni.sh/core/v1alpha1"
+import templates "timoni.sh/chuck-norris-backend/templates"
 
-_commonLabels: {
-	"app.kubernetes.io/name":       values.metadata.name
-	"app.kubernetes.io/managed-by": "timoni"
-} & values.metadata.labels
-
-values: #Values & {
-	metadata: {
-		name:      string @tag(name)
-		namespace: string @tag(namespace)
-	}
-}
+values: templates.#Config
 
 timoni: {
 	apiVersion: "v1alpha1"
-	instance: {
+	instance: templates.#Instance & {
+		config: values
 		config: {
-			image: timoniv1.#Image & {
-				repository: values.image.repository
-				tag:        values.image.tag
-				digest:     ""
-				pullPolicy: values.image.pullPolicy
+			metadata: {
+				name:      string @tag(name)
+				namespace: string @tag(namespace)
 			}
 		}
-		objects: [
-			#Namespace,
-			#Auth0SealedSecret,
-			#DatabaseSealedSecret,
-			#Configmap,
-			#Service,
-			#Middleware,
-			#Deployment,
-			if values.ingress.enabled {#Ingress},
-		]
 	}
 	apply: app: [for obj in instance.objects {obj}]
 }
