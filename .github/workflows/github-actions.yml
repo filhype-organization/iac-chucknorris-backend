@@ -3,9 +3,7 @@ name: CI
 on:
   push:
     paths:
-      - 'templates/**'
-      - 'timoni.cue'
-      - 'values.cue'
+      - '*.cue'
       - 'cue.mod/**'
     branches:
       - main
