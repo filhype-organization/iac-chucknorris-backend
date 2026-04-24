@@ -1,0 +1,25 @@
+name: Publish frontend Timoni module
+
+on:
+  push:
+    paths:
+      - 'frontend/**/*.cue'
+      - 'frontend/cue.mod/**'
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  publish-module:
+    uses: filhype-organization/universal-devops-action/.github/workflows/github-actions.yml@timoni
+    with:
+      docker_image_name: 'leeson77/chuck-norris-frontend-timoni'
+      timoni_module_path: './frontend'
+      enable_java_build: false
+      enable_angular_build: false
+      enable_mkdocs_build: false
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_USERNAME: ${{ secrets.LOGIN_DOCKER_HUB }}
+      DOCKER_TOKEN: ${{ secrets.TOKEN_DOCKER_HUB }}
