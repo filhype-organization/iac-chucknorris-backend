@@ -43,7 +43,7 @@ bundle: {
 				app: {
 					apiUrl:   "https://chuck.filhype.ovh/api"
 					authUrl:  "https://dev-lesson.eu.auth0.com"
-					clientId: "PLACEHOLDER_AUTH0_SPA_CLIENT_ID"
+					clientId: "4LbdqWChDwptSbOBz4ljZ8Le7sYDLZPr"
 				}
 			}
 		}
