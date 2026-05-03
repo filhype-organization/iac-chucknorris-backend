@@ -40,7 +40,7 @@ bundle: {
 					tag: "6a7e54e" // CI:frontend updates this line automatically — do not edit manually.
 				}
 				app: {
-					apiUrl:   "https://chuck.filhype.ovh/api"
+					apiUrl:   "https://chuck.filhype.ovh"
 					authUrl:  "https://dev-lesson.eu.auth0.com"
 					clientId: "4LbdqWChDwptSbOBz4ljZ8Le7sYDLZPr"
 				}
