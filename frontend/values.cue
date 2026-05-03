@@ -34,7 +34,7 @@ values: {
 		ingressClassName: "traefik"
 	}
 	app: {
-		apiUrl:   "https://chuck.filhype.ovh/api"
+		apiUrl:   "https://chuck.filhype.ovh"
 		authUrl:  "https://dev-lesson.eu.auth0.com"
 		clientId: ""
 	}
