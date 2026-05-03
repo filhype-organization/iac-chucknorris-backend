@@ -19,7 +19,10 @@ package templates
 		replicas: #config.replicas
 		selector: matchLabels: "app.kubernetes.io/name": #config.metadata.name
 		template: {
-			metadata: labels: _labels
+			metadata: {
+				labels: _labels
+				annotations: "checksum/config": "\(#config.app.authUrl)|\(#config.app.apiUrl)|\(#config.app.clientId)"
+			}
 			spec: {
 				nodeSelector: "kubernetes.io/arch": "amd64"
 
