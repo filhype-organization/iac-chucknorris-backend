@@ -37,8 +37,7 @@ bundle: {
 			namespace: "chuck-norris"
 			values: {
 				image: {
-					// CI:frontend updates this line automatically — do not edit manually.
-					tag: "latest"
+					tag: "6a7e54e" // CI:frontend updates this line automatically — do not edit manually.
 				}
 				app: {
 					apiUrl:   "https://chuck.filhype.ovh/api"
