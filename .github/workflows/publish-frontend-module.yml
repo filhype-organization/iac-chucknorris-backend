@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish-module:
-    uses: filhype-organization/universal-devops-action/.github/workflows/github-actions.yml@timoni
+    uses: filhype-organization/universal-devops-action/.github/workflows/github-actions.yml@main
     with:
       docker_image_name: 'leeson77/chuck-norris-frontend-timoni'
       timoni_module_path: './frontend'
