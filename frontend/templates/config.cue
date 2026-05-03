@@ -12,7 +12,7 @@ package templates
 		repository: *"leeson77/chuck-norris-frontend" | string
 		tag:        *"latest" | string
 		digest:     *"" | string
-		pullPolicy: *"IfNotPresent" | "Always" | "Never"
+		pullPolicy: *"Always" | "IfNotPresent" | "Never"
 	}
 
 	replicas: *1 | int & >=0
