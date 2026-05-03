@@ -47,7 +47,7 @@ values: {
 		audience:           "chuck-norris-api"
 		applicationType:    "service"
 		verifyWithUserInfo: "false"
-		roleClaimPath:      "scope"
+		roleClaimPath:      "permissions"
 		secretName:         "auth0-oidc-secret"
 	}
 	hibernate: databaseGeneration: "validate"
