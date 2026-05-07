@@ -15,8 +15,7 @@ bundle: {
 			namespace: "chuck-norris"
 			values: {
 				image: {
-					// CI:backend updates this line automatically — do not edit manually.
-					tag: "latest"
+					tag: "1148a4a" // CI:backend updates this line automatically — do not edit manually.
 				}
 				sealedSecrets: {
 					auth0: {
